@@ -5,6 +5,7 @@ const res = require("express/lib/response");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes")
 const chatRoutes =require("./routes/chatRoutes")
+const messageRoutes = require("./routes/messageRoutes");
 
 dotenv.config()
 const app = express();
@@ -28,6 +29,8 @@ app.get("/api/chat/:id", (req,res) => {
 
 app.use("/api/user", userRoutes);
 app.use("/api/chats", chatRoutes);
+app.use("/api/messages", messageRoutes);
+
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT , console.log(`Server started on PORT ${PORT}`));
