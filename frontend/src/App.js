@@ -1,14 +1,24 @@
 import './App.css';
-import { Route } from 'react-router-dom';
+import { Route,Routes } from 'react-router-dom';
+import React, { useState } from 'react';
 import HomePage from './Pages/HomePage';
 import ChatPage from './Pages/ChatPage';
 
+
+
 function App() {
+
+  const [user,setUser] = useState();
+
   return (
-    <div className="App">
-      <Route path="/" component={ HomePage } exact/>
-      <Route path="/chats" component={ ChatPage } />
+      
+       <div className="App">
+      <Routes>
+    <Route path="/" element={<HomePage/>} exact />
+    <Route path="/chats" element={<ChatPage/>} />
+    </Routes>
     </div>
+
   );
 }
 
