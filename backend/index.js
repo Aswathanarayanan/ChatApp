@@ -18,18 +18,18 @@ app.get("/",(req,res) => {
     res.send("Home Page CHAT APP");
 });
 
-app.get("/api/chat", (req,res) => {
-    res.send(chats);
-});
+// app.get("/api/chat", (req,res) => {
+//     res.send(chats);
+// });
 
-app.get("/api/chat/:id", (req,res) => {
-    const reqchat = chats.find((c) => c._id === req.params.id);
-    res.send(reqchat);
-});
+// app.get("/api/chat/:id", (req,res) => {
+//     const reqchat = chats.find((c) => c._id === req.params.id);
+//     res.send(reqchat);
+// });
 
 app.use("/api/user", userRoutes);
-app.use("/api/chats", chatRoutes);
-app.use("/api/messages", messageRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/message", messageRoutes);
 
 
 const PORT = process.env.PORT || 5000
@@ -44,4 +44,27 @@ const io = require('socket.io')(server, {
 
 io.on("connection", (socket) => {
     console.log("connected to socket.io");
+
+    socket.on("setup", (userData) => {
+        socket.join(userData._id);
+        console.log(userData._id);
+        socket.emit("connected");
+    });
+
+    socket.on("join chat", (room) => {
+        socket.join(room);
+        console.log("user joined the room: " + room);
+    });
+
+    socket.on("new message", (newMessageReceived) => {
+        var chat = newMessageReceived.chat;
+
+        if (!chat.user) return console.log("chat users not defined");
+
+        chats.users.forEach(user => {
+            if (user._id == newMessageReceived.sender._id) return;
+
+            socket.in(user._id).emit("message Received",newMessageReceived)
+        })
+    })
 });
