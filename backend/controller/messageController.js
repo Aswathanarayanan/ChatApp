@@ -29,7 +29,7 @@ const sendMessage = asyncHandler(async (req, res) => {
   
       await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
       
-      console.log("sendong message "+message)
+      //console.log("sendong message "+message)
       res.json(message);
     } catch (error) {
       console.log("not sendong message "+error)

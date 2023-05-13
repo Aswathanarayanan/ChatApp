@@ -89,7 +89,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           },
           config
         );
-        socket.emit("new message", data);
+        console.log("new mesage socket");
+        socket.emit("newmessage", data);
         setMessages([...messages, data]);
       } catch (error) {
         toast({
@@ -106,12 +107,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   useEffect(() => {
     socket = io(ENDPOINT);
+    console.log("before setup emit "+user.name);
     socket.emit("setup", user);
-    socket.on("connected", () => setSocketConnected(true));
+    socket.on("connected", () => {
+      console.log("inside socket");
+      setSocketConnected(true)
+    });
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
-
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -122,7 +125,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]);
 
   useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
+    socket.on("message Received", (newMessageRecieved) => {
       if (
         !selectedChatCompare || // if chat is not selected or doesn't match current chat
         selectedChatCompare._id !== newMessageRecieved.chat._id
@@ -132,6 +135,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           setFetchAgain(!fetchAgain);
         }
       } else {
+        console.log("inside message recieved room "+newMessageRecieved.sender.name);
         setMessages([...messages, newMessageRecieved]);
       }
     });

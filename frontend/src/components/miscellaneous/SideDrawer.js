@@ -110,7 +110,7 @@ function SideDrawer() {
       console.log("inside access chat "+ userId + data)
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
-      console.log("selectedchat "+selectedChat)
+      console.log("selectedchat "+data)
       setLoadingChat(false);
       onClose();
     } catch (error) {
