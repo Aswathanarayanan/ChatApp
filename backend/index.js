@@ -7,10 +7,11 @@ const userRoutes = require("./routes/userRoutes")
 const chatRoutes =require("./routes/chatRoutes")
 const messageRoutes = require("./routes/messageRoutes");
 
+const cors = require('cors');
 dotenv.config()
 const app = express();
 connectDB();
- 
+app.use(cors({origin: '*'}));
 
 app.use(express.json());
 
