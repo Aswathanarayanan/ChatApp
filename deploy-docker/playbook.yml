@@ -1,0 +1,8 @@
+---
+- hosts : localhost
+  tasks:
+    - name : Pull Backend Docker Image From Docker Hub
+      shell : docker pull ashishkulkarni410/chatappbackend:latest
+
+    - name : Pull Frontend Docker Image From Docker Hub
+      shell : docker pull ashishkulkarni410/chatappfrontend:latest
