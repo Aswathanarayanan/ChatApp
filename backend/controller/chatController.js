@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const logger = require("../../logger");
 const Chat = require("../models/chatModel");
 const User = require("../models/userModel");
 
@@ -6,6 +7,7 @@ const accessChat = asyncHandler(async (req, res) => {
     const { userId } = req.body;
 
     if (!userId) {
+        logger.info("userid param not sent");
         console.log("userid param not sent");
         return res.sendStatus(400);
     } else {
@@ -27,8 +29,10 @@ const accessChat = asyncHandler(async (req, res) => {
 
     if (isChat.length > 0) {
         //console.log("sending chat" + isChat[0])
+        logger.info("chat found");
         res.send(isChat[0]);
     } else {
+        logger.info("chat not found , creating");
         var chatData = {
             chatName: "sender",
             isGroupChat: false,
@@ -41,8 +45,10 @@ const accessChat = asyncHandler(async (req, res) => {
             const fullChat = await Chat.findOne({ _id: createdChat._id }).populate("users", "-password");
 
             console.log("/chats is success")
+            logger.info("chat created");
             res.status(200).send(fullChat);
         } catch (error) {
+            logger.error("error creating chat "+error);
             res.status(400);
             throw new Error(error.message);
         }
@@ -64,11 +70,13 @@ const fetchChats = asyncHandler(async (req, res) => {
                     select: "name pic email"
                 });
                 //console.log("inside fetch chats "+req.user._id)
+                logger.info("fetched chats");
                 res.status(200).send(results);
             });
         //res.status(200).send(chats);
         
     } catch (error) {
+        logger.error("cannot fetch chats "+error)
         res.status(400);
         throw new Error(error.message);
     }
@@ -76,12 +84,14 @@ const fetchChats = asyncHandler(async (req, res) => {
 
 const createGroupChat = asyncHandler(async (req, res) => {
     if (!req.body.users || !req.body.name) {
+        logger.error("form not filled");
         return res.status(400).send({ message: "please fill" });
     }
 
     var users = JSON.parse(req.body.users);
     if (users.length < 2) {
-        return res.status(400).send("more than 2 users is neede");
+        logger.error("more than 2 users is needed")
+        return res.status(400).send("more than 2 users is needed");
     }
     users.push(req.user);
 
@@ -97,8 +107,10 @@ const createGroupChat = asyncHandler(async (req, res) => {
             .populate("users", "-password")
             .populate("groupAdmin", "-password")
         
+        logger.info("group created" + groupChat.name);
         res.status(200).json(fullGroupChat);
     } catch (error) {
+        logger.error("group creatin failed " + error);
         res.status(400);
         throw new Error(error.message);
     }
@@ -119,9 +131,11 @@ const renameGroup = asyncHandler(async (req, res) => {
         .populate("users", "-password")
         .populate("groupAdmin", "-password");
     if (!updatedChat) {
+        logger.error("cannnot rename ,chat not found")
         res.status(404);
         throw new Error("chat not found")
     } else {
+        logger.info("renamed chat " + updatedChat.chatName);
         res.json(updatedChat);
     }
 });
@@ -141,9 +155,11 @@ const addToGroup = asyncHandler(async (req, res) => {
         .populate("users", "-password")
         .populate("groupAdmin", "-password");
     if (!adduser) {
+        logger.error("cannnot add ,group not found")
         res.status(404);
         throw new Error("chat not found");
     } else {
+        logger.info("added to group");
         res.json(adduser);
     }
 });
@@ -163,9 +179,11 @@ const removeFromGroup = asyncHandler(async (req, res) => {
         .populate("users", "-password")
         .populate("groupAdmin", "-password");
     if (!removeuser) {
+        logger.error("cannnot remove ,group not found")
         res.status(404);
         throw new Error("chat not found");
     } else {
+        logger.info("removed from group");
         res.json(removeuser);
     }
 });
