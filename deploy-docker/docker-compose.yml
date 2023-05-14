@@ -1,0 +1,16 @@
+version: "3"
+services:
+  frontend:
+    image: ashishkulkarni410/chatappfrontend:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - chat-app
+  backend:
+    image: ashishkulkarni410/chatappbackend:latest
+    ports:
+      - "5000:5000"
+    networks:
+      - chat-app
+networks:
+  chat-app:
