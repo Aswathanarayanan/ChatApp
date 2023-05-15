@@ -8,6 +8,7 @@ const chatRoutes =require("./routes/chatRoutes")
 const messageRoutes = require("./routes/messageRoutes");
 
 const cors = require('cors');
+const logger = require("../logger");
 dotenv.config()
 const app = express();
 connectDB();
@@ -36,6 +37,7 @@ app.use("/api/message", messageRoutes);
 const PORT = process.env.PORT || 5000
 
 const server = app.listen(PORT, console.log(`Server started on PORT ${PORT}`));
+logger.info(`Server started`)
 const io = require('socket.io')(server, {
     pingTimeout: 60000,
     cors: {
@@ -45,7 +47,7 @@ const io = require('socket.io')(server, {
 
 io.on("connection", (socket) => {
     console.log("connected to socket.io "+socket);
-
+    logger.info("connected to socket.io ");
     socket.on("setup", (userData) => {
         socket.join(userData._id);
         console.log(userData._id);
@@ -55,14 +57,18 @@ io.on("connection", (socket) => {
     socket.on("join chat", (room) => {
         socket.join(room);
         console.log("user joined the room: " + room);
+        logger.info("user joined the room: " + room);
     });
 
     socket.on("newmessage", (newMessageReceived) => {
-        console.log("inside new message room "+newMessageReceived.sender.name);
+        console.log("inside new message room " + newMessageReceived.sender.name);
+        logger.info("inside new message room " + newMessageReceived.sender.name);
         var chat = newMessageReceived.chat;
 
-        if (!chat.users) return console.log("chat users not defined");
-
+        if (!chat.users) {
+            logger.info("chat users not defined");
+            return console.log("chat users not defined");
+        }
         chat.users.forEach(user => {
             if (user._id == newMessageReceived.sender._id) return;
             console.log("inside new message room emit "+newMessageReceived.sender.name)
