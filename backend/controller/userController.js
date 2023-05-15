@@ -1,15 +1,18 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const generateToken = require("../config/generateToken");
+const logger = require("../../logger");
 
 const registerUser = asyncHandler(async (req,res) => {
     const { name, email, password, pic } = req.body;
     if (!name || !email || !password) {
+        logger.error("enter the values to register the user");
         res.status(400);
-        throw new Error("enter the valuse")
+        throw new Error("enter the values")
     }
     const userExists = await User.findOne({ email });
     if (userExists) {
+        logger.error("user already exists");
         res.status(400);
         console.log(userExists.name);
         throw new Error("user already exixts");
@@ -23,12 +26,14 @@ const registerUser = asyncHandler(async (req,res) => {
     });
 
     if (user) {
+        logger.info("user created")
         res.status(201).json({
             _id: user._id,
             name: user.name,
             toker: generateToken(user._id)
         });
     } else {
+        logger.error("failed to create user")
         res.status(400);
         throw new Error("failed to create user");
     }
@@ -41,6 +46,7 @@ const authUser = asyncHandler(async (req, res) => {
     console.log(user.name);
     
     if (user && (await user.matchPassword(password))) {
+        logger.info(user.name + " logged in succesfully")
         res.json({
             _id: user._id,
             name: user.name,
@@ -56,7 +62,7 @@ const allUsers = asyncHandler(async (req, res) => {
     }
     : {};
     const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
-    
+    logger.info("all users fetched");
     res.send(users);
   });
   

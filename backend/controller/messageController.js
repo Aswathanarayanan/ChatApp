@@ -2,11 +2,13 @@ const asyncHandler = require("express-async-handler");
 const Message = require ("../models/messageModel");
 const User = require("../models/userModel");
 const Chat = require("../models/messageModel");
+const logger = require("../../logger");
 
 const sendMessage = asyncHandler(async (req, res) => {
     const { content, chatId } = req.body;
   
-    if (!content || !chatId) {
+  if (!content || !chatId) {
+      logger.error("Invalid data passed into request for sending message")
       console.log("Invalid data passed into request");
       return res.sendStatus(400);
     }
@@ -30,9 +32,11 @@ const sendMessage = asyncHandler(async (req, res) => {
       await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
       
       //console.log("sendong message "+message)
+      logger.info("message sent by "+message.sender.name)
       res.json(message);
     } catch (error) {
-      console.log("not sendong message "+error)
+      logger.error("not sending message "+error)
+      console.log("not sending message "+error)
       res.status(400);
       throw new Error(error.message);
     }
@@ -41,9 +45,11 @@ const sendMessage = asyncHandler(async (req, res) => {
 const allMessages = asyncHandler(async ( req, res) => {
 
     try {
-        const message = await Message.find({chat:req.params.chatId}).populate("sender","name pic email").populate("chat");
+      const message = await Message.find({ chat: req.params.chatId }).populate("sender", "name pic email").populate("chat");
+      logger.info("all mesages for the chat fetched");
         res.json(message);
     } catch (error) {
+      logger.error("cannot fetch the messages " + error);
       console.log(error);
         res.status(400);
         throw new Error();
