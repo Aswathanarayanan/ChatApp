@@ -7,15 +7,33 @@ pipeline{
                 git url: 'https://github.com/Ashish-A-Kulkarni/ChatApp.git',
                 	branch: 'master'
             }
-        }
+        } 
+        
+        stage ('Remove previous images') {
+            steps {
+               sh 'docker rm -f deploy-docker_backend_1'
+               sh 'docker rm -f deploy-docker_frontend_1'
+               sh 'docker rmi -f ashishkulkarni410/chatappfrontend:latest'
+               sh 'docker rmi -f ashishkulkarni410/chatappbackend:latest'
+            }
+        } 
 
-         stage('Build Docker Image') {
+         stage('Build Backend Docker Image') {
             steps {
                 sh 'docker build -t ashishkulkarni410/chatappbackend:latest .'
-                sh 'docker build -t ashishkulkarni410/chatappfrontend:latest .'
+               
             }
         }
 
+        stage('Build Frontend Docker Image') {
+            
+            steps {
+                 dir("frontend") {
+               sh 'docker build -t ashishkulkarni410/chatappfrontend:latest .'
+                 }
+               
+            }
+        }
         stage('Publish Docker Image') {
             steps {
                 withDockerRegistry([ credentialsId: "docker-jenkins", url: "" ]) {
