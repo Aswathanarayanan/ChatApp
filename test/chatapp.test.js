@@ -35,7 +35,7 @@ describe('Login API', () => {
   it('should respond with user details', function (done) {
     this.timeout(5000);
     const userCredentials = {
-      email: 'testuser2@iiitb.org',
+      email: 'ashish@iiitb.org',
       password: '123456'
     };
 
@@ -91,7 +91,7 @@ describe('chat API get chats', () => {
       .end((err, res) => {
         if (err) return done(err);
         
-        chat = res;
+        chat = res.body;
         // Assert response body properties
         //expect(res.body).to.have.property('email').equal(userCredentials.email);
         //expect(res.body).to.have.property('name');
@@ -102,13 +102,13 @@ describe('chat API get chats', () => {
   });
 });
   
-describe('chat API rename', () => {
+describe('chat API addtogroup', () => {
   it('getting chats', function (done) {
     this.timeout(5000);
     request(app)
       .put('/api/chat/rename')
-      .set('Authorization' , `Bearer ${token}`)
-      .send({chatId: `${chat.body._id}`,chatName: 'newChatTest'})
+      .set('Authorization', `Bearer ${token}`)
+      .send({ chatId: `645e31276128cc4e521ce7fb`, chatName: 'newChatTest' })
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
@@ -121,5 +121,88 @@ describe('chat API rename', () => {
         done();
       });
   });
-  });
-    
+});
+
+describe('chat API rename', () => {
+  it('getting chats', function (done) {
+    this.timeout(5000);
+    request(app)
+      .put('/api/chat/groupadd')
+      .set('Authorization' , `Bearer ${token}`)
+      .send({chatId: `645e31276128cc4e521ce7fb`,userId: '645b1d6b39b4f34a0881e1d4'})
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err);
+        
+        // Assert response body properties
+        //expect(res.body).to.have.property('email').equal(userCredentials.email);
+        //expect(res.body).to.have.property('name');
+        // Add more assertions as needed
+
+        done();
+      });
+    });
+});
+
+describe('chat API remove', () => {
+  it('getting chats', function (done) {
+    this.timeout(5000);
+    request(app)
+      .put('/api/chat/groupremove')
+      .set('Authorization' , `Bearer ${token}`)
+      .send({chatId: `645e31276128cc4e521ce7fb`,userId: '645b1d6b39b4f34a0881e1d4'})
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err);
+        
+        // Assert response body properties
+        //expect(res.body).to.have.property('email').equal(userCredentials.email);
+        //expect(res.body).to.have.property('name');
+        // Add more assertions as needed
+
+        done();
+      });
+    });
+});
+
+describe('message API send', () => {
+  it('getting chats', function (done) {
+    this.timeout(5000);
+    request(app)
+      .post('/api/message')
+      .set('Authorization' , `Bearer ${token}`)
+      .send({content:`Api test`,chatId: `645e31276128cc4e521ce7fb`})
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err);
+        
+        // Assert response body properties
+        //expect(res.body).to.have.property('email').equal(userCredentials.email);
+        //expect(res.body).to.have.property('name');
+        // Add more assertions as needed
+
+        done();
+      });
+    });
+});
+
+describe('message API fetch', () => {
+  it('fetching messages', function (done) {
+    this.timeout(5000);
+    request(app)
+      .get('/api/message/645e31276128cc4e521ce7fb')
+      .set('Authorization' , `Bearer ${token}`)
+      //.send({content:`Api test`,chatId: `645e31276128cc4e521ce7fb`})
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err);
+        
+        // Assert response body properties
+        //expect(res.body).to.have.property('email').equal(userCredentials.email);
+        //expect(res.body).to.have.property('name');
+        // Add more assertions as needed
+
+        done();
+      });
+    });
+});
