@@ -5,12 +5,19 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - chat-app
+      chat-app:
+        ipv4_address: 172.19.0.2
   backend:
     image: ashishkulkarni410/chatappbackend:latest
     ports:
       - "5000:5000"
     networks:
-      - chat-app
+      chat-app:
+        ipv4_address: 172.19.0.3
 networks:
   chat-app:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/24
+    
