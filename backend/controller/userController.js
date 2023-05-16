@@ -30,11 +30,11 @@ const registerUser = asyncHandler(async (req,res) => {
         res.status(201).json({
             _id: user._id,
             name: user.name,
-            toker: generateToken(user._id)
+            token: generateToken(user._id)
         });
     } else {
         logger.error("failed to create user")
-        res.status(400);
+        res.status(400);    
         throw new Error("failed to create user");
     }
 });
